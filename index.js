@@ -11,7 +11,7 @@ const http = require("http").createServer(app);
 const socketIo = require("socket.io");
 const io = socketIo(http);
 const PORT = process.env.PORT || 5000;
-const { addUser } = require("./server/helpers/helper");
+const { addUser,getUser,removeUser } = require("./server/helpers/helper");
 
 io.on("connection", (socket) => {
   console.log("an user was connected");
@@ -32,6 +32,23 @@ io.on("connection", (socket) => {
       console.log("JOIN USER", user)
     }
   });
+  socket.on('send_message',(message,room_id,callback)=>{
+    console.log("legueeeeeeeeeeeeeeeee")
+    console.log("--..-.-.",message)
+    const user = getUser(socket.id);
+    const msgToStore = {
+      name:user.name,
+      user_id:user.user_id,
+      room_id,
+      text: message
+    }
+    console.log('msg...',msgToStore); 
+    io.to(room_id).emit('message',msgToStore);
+    callback()
+  });
+  socket.on('disconnected',()=>{
+    const user = removeUser(socket.id);
+  })
 });
 
 http.listen(PORT, () => {
