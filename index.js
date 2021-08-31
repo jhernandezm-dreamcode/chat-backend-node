@@ -14,8 +14,6 @@ const PORT = process.env.PORT || 5000;
 const { addUser,getUser,removeUser } = require("./server/helpers/helper");
 
 io.on("connection", (socket) => {
-  console.log("an user was connected");
-  console.log("socet id", socket.id);
   socket.on("create-room", (name) => {
     console.log("name ----- ", name);
   });
@@ -26,6 +24,7 @@ io.on("connection", (socket) => {
       room_id,
       user_id,
     });
+    socket.join(room_id);
     if(error){
       console.log("Joinr error",error);
     }else{
@@ -33,8 +32,6 @@ io.on("connection", (socket) => {
     }
   });
   socket.on('send_message',(message,room_id,callback)=>{
-    console.log("legueeeeeeeeeeeeeeeee")
-    console.log("--..-.-.",message)
     const user = getUser(socket.id);
     const msgToStore = {
       name:user.name,
